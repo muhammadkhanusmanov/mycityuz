@@ -62,3 +62,19 @@ class ListUsers(generics.ListAPIView):
     serializer_class = AdminSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['username', 'email', 'first_name', 'last_name']
+
+class DeleteUser(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    def delete(self, request):
+        user = request.user
+        if user.last_name == 'admin':
+            id = request.data.get('id', None)
+            if id is not None:
+                try:
+                    user = User.objects.get(id=id)
+                    user.delete()
+                    return Response({'success': True}, status=status.HTTP_200_OK)
+                except:
+                    return Response({'success': False}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'success': False}, status=status.HTTP_403_FORBIDDEN)
