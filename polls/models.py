@@ -16,6 +16,7 @@ class Post(models.Model):
     pic1 = models.CharField(max_length=80)
     pic2 = models.CharField(max_length=80, blank=True, null=True)
     pic3 = models.CharField(max_length=80, blank=True, null=True)
+    views = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

@@ -63,6 +63,18 @@ class ListUsers(generics.ListAPIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ['username', 'email', 'first_name', 'last_name']
 
+class ListPosts(generics.ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostListSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'description']
+    def get_queryset(self):
+        queryset = Post.objects.all()
+        branch = self.request.query_params.get('branch', None)
+        if branch is not None:
+            queryset = queryset.filter(branch=branch)
+        return queryset
+
 class DeleteUser(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication, SessionAuthentication]
@@ -78,3 +90,44 @@ class DeleteUser(APIView):
                 except:
                     return Response({'success': False}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'success': False}, status=status.HTTP_403_FORBIDDEN)
+
+class DeletePost(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication,SessionAuthentication]
+    
+    def delete(self,request):
+        user = request.user
+        post_id = request.data.get('id', None)
+        if post_id is not None:
+            try:
+                post = Post.objects.get(id=post_id)
+                print(post.owner)
+                if user == post.owner or user.last_name == 'admin':
+                    post.delete()
+                    return Response({'success': True}, status=status.HTTP_200_OK)
+                return Response({'success': False}, status=status.HTTP_403_FORBIDDEN)
+            except:
+                return Response({'success': False}, status=status.HTTP_400_BAD_REQUEST)
+
+class UserPosts(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    def post(self, request):
+        user = request.user
+        posts = Post.objects.filter(owner=user)
+        serializer = PostListSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class CountView(APIView):
+    def post(self, request):
+        # id = request.data.get('id', None)
+        # ip_address = request.META.get('REMOTE_ADDR')
+        print(ip_address)
+        if id is not None:
+            try:
+                post = Post.objects.get(id=id)
+                post.views = post.views + 1
+                post.save()
+                return Response({'status': True}, status=status.HTTP_200_OK)
+            except:
+                return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
