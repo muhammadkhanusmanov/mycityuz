@@ -118,13 +118,12 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.profile',
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://6bb5-188-113-214-251.ngrok-free.app',
-    # boshqa trusted originlarni qo'shishingiz mumkin
-]
+# CSRF_TRUSTED_ORIGINS = [
+#     ''
+# ]
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'key'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'secret'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = KEY
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = SECRET
 
 
 # Password validation
