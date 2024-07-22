@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'polls',
+    'social_django',
+    'rest_framework.authtoken',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -49,9 +52,28 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    
+]
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',  # Bu yerda google backend'ini qo'shish
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+CORS_ALLOWED_ORIGINS = ['*']
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5500",
+    "https://6bb5-188-113-214-251.ngrok-free.app",
 ]
 
 ROOT_URLCONF = 'core.urls'
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
 TEMPLATES = [
     {
@@ -64,6 +86,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -83,9 +107,24 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10  
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
 }
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://6bb5-188-113-214-251.ngrok-free.app',
+    # boshqa trusted originlarni qo'shishingiz mumkin
+]
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'key'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'secret'
 
 
 # Password validation
