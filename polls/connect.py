@@ -11,6 +11,7 @@ APP_SECRET = ''
 REFRESH_TOKEN = ''
 TOKEN_FILE = ''
 
+
 def save_token(access_token, retrieval_time):
     with open(TOKEN_FILE, 'w') as file:
         json.dump({
