@@ -1,13 +1,6 @@
 import dropbox
 from django.conf import settings
-import requests
 import json
-import datetime
-
-TOKEN_URL = 'https://api.dropbox.com/oauth2/token'
-APP_KEY = 'naifizow6uxwbwc'
-APP_SECRET = 'wrsutnvek2yg5s0'
-AUTHORIZATION_CODE = 'BygxikU8iA4AAAAAAAAAXU4pVYE1JllnmFNNa-G-jZU'
 
 import os
 import requests
