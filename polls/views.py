@@ -30,6 +30,9 @@ class LoginView(APIView):
         rsp['token'] = token
         return Response(rsp,status=status.HTTP_200_OK) 
 
+class SignUp(APIView):
+    def post(self, request, *args, **kwargs):
+
 
 class PostCreateView(APIView):
     def post(self, request, *args, **kwargs):
@@ -46,6 +49,7 @@ class PostCreateView(APIView):
                 title=data['title'],
                 branch=data['branch'],
                 owner=data['owner'],
+                position=data['position'],
                 description=data['description'],
                 location=data['location'],
                 pic1=pic1_url,
@@ -133,21 +137,12 @@ class CountView(APIView):
                 return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from social_django.utils import psa
-
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from social_django.utils import load_strategy, load_backend
 from social_core.actions import do_complete
 from social_core.backends.utils import get_backend
 from social_core.exceptions import AuthAlreadyAssociated
 from django.contrib.auth import get_user_model
-from rest_framework.authtoken.models import Token
 from social_core.exceptions import AuthForbidden, AuthAlreadyAssociated
 
 User = get_user_model()
@@ -196,3 +191,23 @@ class GoogleRegister(APIView):
         except AuthForbidden:
             return Response({'error': 'Your credentials aren\'t allowed'}, status=status.HTTP_403_FORBIDDEN)
 
+class ChangeProfile(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        username = request.POST.get('username', user.username)
+        full_name = request.POST.get('full_name', user.first_name)
+        phone_number = request.POST.get('phone_number', user.last_name.split('/')[1])
+        
+        user.username = username
+        user.first_name = full_name
+        user.last_name = phone_number
+        try:
+            user.save()
+        
+            return Response({'success': True}, status=status.HTTP_200_OK)
+        except:
+            return Response({'error': 'Failed to update profile'}, status=status.HTTP_400_BAD_REQUEST)
+        

@@ -6,10 +6,6 @@ import os
 import requests
 import datetime
 
-APP_KEY = ''
-APP_SECRET = ''
-REFRESH_TOKEN = ''
-TOKEN_FILE = ''
 
 
 def save_token(access_token, retrieval_time):
