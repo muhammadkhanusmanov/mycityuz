@@ -58,15 +58,11 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',  # Bu yerda google backend'ini qo'shish
+    'social_core.backends.google.GoogleOAuth2', 
     'django.contrib.auth.backends.ModelBackend',
 )
 
 CORS_ALLOWED_ORIGINS = ['*']
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5500",
-    "https://6bb5-188-113-214-251.ngrok-free.app",
-]
 
 ROOT_URLCONF = 'core.urls'
 
@@ -118,12 +114,12 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.profile',
 ]
 
-# CSRF_TRUSTED_ORIGINS = [
-#     ''
-# ]
+CSRF_TRUSTED_ORIGINS = [
+    '',
+]
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = KEY
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = SECRET
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
 
 
 # Password validation
