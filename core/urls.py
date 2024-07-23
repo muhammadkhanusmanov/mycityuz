@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path,include
 from polls.views import (PostCreateView,LoginView,ListUsers,DeleteUser,DeletePost,
-    UserPosts,ListPosts,CountView,GoogleLogin,GoogleRegister)
+    UserPosts,ListPosts,CountView,GoogleLogin,GoogleRegister,ChangeProfile)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -14,6 +14,7 @@ urlpatterns = [
     path('user/posts/',UserPosts.as_view()),
     path('list/posts/',ListPosts.as_view()),
     path('view/post/',CountView.as_view()),
-    path('google/',GoogleLogin.as_view()),
-    path('googler/',GoogleRegister.as_view())
+    path('google/login/',GoogleLogin.as_view()),
+    path('google/register/',GoogleRegister.as_view()),
+    path('edit/profile/',ChangeProfile.as_view())
 ]
