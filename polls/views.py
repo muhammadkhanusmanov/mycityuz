@@ -15,7 +15,7 @@ from django.db.models import F
 from rest_framework.authentication import SessionAuthentication
 
 from .serialazers.userserializers import UserSerializer,AdminSerializer
-from .serialazers.postserialazers import PostSerializer,PostListSerializer
+from .serialazers.postserialazers import PostSerializer,PostListSerializer,PostSimpleSerializer,FullPostSerializer
 from .models import Posts
 from .connect import upload_image_to_dropbox
 
@@ -28,16 +28,16 @@ class LoginView(APIView):
         rsp = AdminSerializer(user)
         token,created = Token.objects.get_or_create(user=user)
         rsp['token'] = token
-        return Response(rsp,status=status.HTTP_200_OK) 
+        return Response(rsp,status=status.HTTP_200_OK)
 
-class SignUp(APIView):
-    def post(self, request, *args, **kwargs):
+# class SignUp(APIView):
+#     def post(self, request, *args, **kwargs):
 
 
 class PostCreateView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = PostSerializer(data=request.data)
-        
+
         if serializer.is_valid():
             data = serializer.validated_data
 
@@ -58,7 +58,7 @@ class PostCreateView(APIView):
             )
 
             return Response(PostListSerializer(post).data, status=status.HTTP_201_CREATED)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ListUsers(generics.ListAPIView):
@@ -98,7 +98,7 @@ class DeleteUser(APIView):
 class DeletePost(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication,SessionAuthentication]
-    
+
     def delete(self,request):
         user = request.user
         post_id = request.data.get('id', None)
@@ -112,15 +112,6 @@ class DeletePost(APIView):
                 return Response({'success': False}, status=status.HTTP_403_FORBIDDEN)
             except:
                 return Response({'success': False}, status=status.HTTP_400_BAD_REQUEST)
-
-class UserPosts(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [TokenAuthentication, SessionAuthentication]
-    def post(self, request):
-        user = request.user
-        posts = Posts.objects.filter(owner=user)
-        serializer = PostListSerializer(posts, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class CountView(APIView):
     def post(self, request):
@@ -200,14 +191,42 @@ class ChangeProfile(APIView):
         username = request.POST.get('username', user.username)
         full_name = request.POST.get('full_name', user.first_name)
         phone_number = request.POST.get('phone_number', user.last_name.split('/')[1])
-        
+
         user.username = username
         user.first_name = full_name
         user.last_name = phone_number
         try:
             user.save()
-        
+
             return Response({'success': True}, status=status.HTTP_200_OK)
         except:
             return Response({'error': 'Failed to update profile'}, status=status.HTTP_400_BAD_REQUEST)
-        
+    
+# user get own profile     
+class UserProfile(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    
+    def post(self,request):
+        user = request.user
+        ser_user = UserSerializer(user)
+        posts = Posts.filter.objects(owner=user)
+        posts = PostSimpleSerializer(posts)
+        data = {"owner":ser_user.data,"posts":posts.data}
+        return Response(data,status=status.HTTP_200_OK)
+
+
+# get a post
+class GetPost(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    
+    def post(self, request):
+        id = data.get('id',None)
+        if id is not None:
+            try:
+                post = Posts.objects.get(id=id)
+                ser_post = FullPostSerializer(post)
+                return Response(ser_post.data,status=status.HTTP_200_OK)
+            except:
+                return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
