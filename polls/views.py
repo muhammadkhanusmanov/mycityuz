@@ -229,4 +229,5 @@ class GetPost(APIView):
                 ser_post = FullPostSerializer(post)
                 return Response(ser_post.data,status=status.HTTP_200_OK)
             except:
-                return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'status':False,'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'status':False,'error': 'Missing id'}, status=status.HTTP_400_BAD_REQUEST)
