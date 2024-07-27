@@ -13,8 +13,19 @@ class PostSerializer(serializers.ModelSerializer):
         model = Posts
         fields = ['title', 'branch', 'owner', 'description', 'location', 'pic1', 'pic2', 'pic3']
 
+class FullPostSerializer(serializers.ModelSerializer):
+    owner = UserSerializer(read_only=True)
+    class Meta:
+        model = Posts
+        fields = '__all__'
+
 class PostListSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
     class Meta:
         model = Posts
-        fields = ['id','title', 'branch', 'owner', 'description', 'location', 'pic1', 'pic2', 'pic3']
+        fields = ['id','title', 'branch', 'owner', 'description', 'location', 'pic1']
+
+class PostSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Posts
+        fields = ['id','title', 'branch', 'description', 'location', 'pic1', 'pic2', 'pic3']
