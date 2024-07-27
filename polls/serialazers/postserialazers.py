@@ -11,7 +11,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Posts
-        fields = ['title', 'branch', 'owner', 'description', 'location', 'pic1', 'pic2', 'pic3']
+        fields = ['title', 'branch', 'position', 'description', 'location', 'pic1', 'pic2', 'pic3']
 
 class FullPostSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
