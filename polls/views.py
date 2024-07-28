@@ -31,8 +31,30 @@ class LoginView(APIView):
         rsp['token'] = token
         return Response(rsp,status=status.HTTP_200_OK)
 
-# class SignUp(APIView):
-#     def post(self, request, *args, **kwargs):
+class SignUp(APIView):
+    """Create a new user"""
+    def post(self, request):
+        data = request.data
+        username = data.get('username',None)
+        password = data.get('password',None)
+        full_name = data.get('first_name',None)
+        phone_number = data.get('phone_number',None)
+        try:
+            ph = User.objects.get(last_name=phone_number)
+            return Response({'message':'The phone number already exist','status':False},status=status.HTTP_400_BAD_REQUEST)
+        except:
+            try:
+                user = User.objects.create(
+                    username=username,
+                    password=make_password(password),
+                    first_name=full_name,
+                    last_name=phone_number,
+                )
+                user.save()
+                token,created = Token.objects.get_or_create(user=user)  
+                return Response({'token':token.key},status=status.HTTP_201_CREATED)
+            except:
+                return Response({'status':'The username already exist'},status=status.HTTP_400_BAD_REQUEST)
 
 
 class PostCreateView(APIView):
@@ -238,7 +260,7 @@ class SavePost(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
     
-    def post(self, request):
+    def put(self, request):
         user = request.user
         post_id = data.get('id',None)
         try:
@@ -254,3 +276,13 @@ class SavePost(APIView):
             saved.posts.add(post)
             saved.save()
             return Response({'status':True,'message': 'Post saved successfully'}, status=status.HTTP_200_OK)
+    
+    # get saved posts
+    def post(self, post):
+        user = request.user
+        try:
+            saved = Saved.objects.get(user=user)
+            ser_saved = SavedSerializer(saved)
+            return Response(ser_saved.data,status=status.HTTP_200_OK)
+        except:
+            return Response({'status':False,'message': 'Not found saved posts'}, status=status.HTTP_404_NOT_FOUND)
