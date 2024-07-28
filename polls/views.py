@@ -16,7 +16,8 @@ from rest_framework.authentication import SessionAuthentication
 
 from .serialazers.userserializers import UserSerializer,AdminSerializer
 from .serialazers.postserialazers import PostSerializer,PostListSerializer,PostSimpleSerializer,FullPostSerializer
-from .models import Posts
+from .serialazers.savedserialazers import SavedSerializer
+from .models import Posts,Saved
 from .connect import upload_image_to_dropbox
 
 
@@ -48,8 +49,8 @@ class PostCreateView(APIView):
             post = Posts.objects.create(
                 title=data['title'],
                 branch=data['branch'],
+                position = data['position'],
                 owner=data['owner'],
-                position=data['position'],
                 description=data['description'],
                 location=data['location'],
                 pic1=pic1_url,
@@ -69,7 +70,7 @@ class ListUsers(generics.ListAPIView):
 
 class ListPosts(generics.ListAPIView):
     queryset = Posts.objects.all()
-    serializer_class = PostListSerializer
+    serializer_class = PostSimpleSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'description']
     def get_queryset(self):
@@ -115,9 +116,8 @@ class DeletePost(APIView):
 
 class CountView(APIView):
     def post(self, request):
-        # id = request.data.get('id', None)
+        id = request.data.get('id', None)
         # ip_address = request.META.get('REMOTE_ADDR')
-        print(ip_address)
         if id is not None:
             try:
                 post = Posts.objects.get(id=id)
@@ -210,7 +210,7 @@ class UserProfile(APIView):
     def post(self,request):
         user = request.user
         ser_user = UserSerializer(user)
-        posts = Posts.filter.objects(owner=user)
+        posts = Posts.objects.filter(user=user)
         posts = PostSimpleSerializer(posts)
         data = {"owner":ser_user.data,"posts":posts.data}
         return Response(data,status=status.HTTP_200_OK)
@@ -231,3 +231,26 @@ class GetPost(APIView):
             except:
                 return Response({'status':False,'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'status':False,'error': 'Missing id'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# saved post
+class SavePost(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    
+    def post(self, request):
+        user = request.user
+        post_id = data.get('id',None)
+        try:
+            saved = Saved.objects.get(user=user)
+            if post_id is not None:
+                post = Posts.objects.get(id=post_id)
+                saved.posts.add(post)
+                saved.save()
+                return Response({'status':True,'message': 'Post saved successfully'}, status=status.HTTP_200_OK)
+            return Response({'status':False,'message': 'Not found post'}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            saved = Saved.objects.create(user=user)
+            saved.posts.add(post)
+            saved.save()
+            return Response({'status':True,'message': 'Post saved successfully'}, status=status.HTTP_200_OK)
