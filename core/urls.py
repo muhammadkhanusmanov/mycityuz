@@ -20,4 +20,5 @@ urlpatterns = [
     path('edit/profile/',ChangeProfile.as_view()),
     path('get/post/', GetPost.as_view()),
     path('save/post/', SavePost.as_view()),
+    path('get/saveds/', SavePost.as_view()),
 ]
