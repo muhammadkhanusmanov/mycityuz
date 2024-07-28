@@ -1,4 +1,4 @@
 from django.contrib import admin
-from .models import Posts, Reaction
+from .models import Posts, Reaction,Saved
 
-admin.site.register([Posts, Reaction])
+admin.site.register([Posts, Reaction,Saved])
