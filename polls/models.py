@@ -39,3 +39,10 @@ class Reaction(models.Model):
     
     def __str__(self):
         return f"{self.user.username} - {self.post.title}"
+
+class Saved(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='saved')
+    posts = models.ManyToManyField(Posts)
+    
+    def __str__(self):
+        return f"{self.user.username} - Saved Posts"
