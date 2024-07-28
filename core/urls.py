@@ -2,11 +2,11 @@ from django.contrib import admin
 from django.urls import path,include
 from polls.views import (PostCreateView,LoginView,ListUsers,DeleteUser,DeletePost,
     UserProfile,ListPosts,CountView,GoogleLogin,GoogleRegister,ChangeProfile,
-    GetPost,SavePost)
+    GetPost,SavePost,SignUp)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('auth/', include('rest_framework.urls')),
+    path('signup/',SignUp.as_view()),
     path('login/',LoginView.as_view()),
     path('post/add/',PostCreateView.as_view()),
     path('users/',ListUsers.as_view()),
