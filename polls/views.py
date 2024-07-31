@@ -286,3 +286,17 @@ class SavePost(APIView):
             return Response(ser_saved.data,status=status.HTTP_200_OK)
         except:
             return Response({'status':False,'message': 'Not found saved posts'}, status=status.HTTP_404_NOT_FOUND)
+    
+    # delete a saved post
+    def delete(self, request):
+        user = request.user
+        post_id = data.get('id',None)
+        try:
+            post = Saved.objects.get()
+            if user == post.user:
+                saved = Saved.objects.get(user=user)
+                saved.posts.remove(post)
+                return Response({'status':True,'message':'message was deleted'}, status=status.HTTP_200_OK)
+            return Response({'status':False,'message':'Not found'}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'status':False,'message':'Id is required'}, status=status.HTTP_400_BAD_REQUEST)
