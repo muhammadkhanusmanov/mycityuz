@@ -21,4 +21,5 @@ urlpatterns = [
     path('get/post/', GetPost.as_view()),
     path('save/post/', SavePost.as_view()),
     path('get/saveds/', SavePost.as_view()),
+    path('delete/saved/',SavePost.as_view())
 ]
